@@ -1,0 +1,22 @@
+{
+  "name": "languages",
+  "version": "0.0.0",
+  "authors": [
+    "James H. Edwards <james.howe.edwards@gmail.com>"
+  ],
+  "description": "A Hub for Language Innovators",
+  "main": "server.js",
+  "keywords": [
+    "human",
+    "language",
+    "hub"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,25 @@
+<nav class="navbar navbar-default" role="navigation">
+  	<div class="container-fluid">
+  		<div class="collapse navbar-collapse">
+  			<ul class="nav navbar-nav">
+  				<li><a href="/#/home">Home</a></li>
+  				<li><a href="/#/classes">Classes</a></li>
+  				<li><a href="/#/dictionary">Dictionary</a></li>
+  				<li><a href="/#/structures">Structures</a></li>
+  				<li><a href="/#/transforms">Transforms</a></li>
+  			</ul>
+  		</div>
+  	</div>
+</nav>
+<h2>Class List</h2>
+<div class='classes-form'>
+	<form method="post" action="/api/new-class">
+		<input name="className" placeholder="class name">
+		<input name="explanation" placeholder="explanation">
+		<input type="submit" value="Save">
+	</form>
+</div>
+<div class="classes-template", ng-repeat="class in data.classes">
+	<p class='lead'>{{class.name}}</p>
+	<span>{{class.explanation}}</span>
+</div>

@@ -1,0 +1,26 @@
+{
+  "name": "languages",
+  "version": "0.0.0",
+  "description": "A Hub for Language Innovation",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "human",
+    "language",
+    "hub"
+  ],
+  "author": "James H. Edwards",
+  "license": "MIT",
+  "dependencies": {
+    "express": "~4.8.5",
+    "mongoose": "~3.8.15",
+    "bcrypt-nodejs": "0.0.3",
+    "ejs": "~1.0.0",
+    "body-parser": "~1.6.5",
+    "express-session": "~1.7.6",
+    "grunt": "~0.4.5"
+  }
+}
