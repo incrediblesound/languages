@@ -10,19 +10,7 @@ module.exports = function(app, express){
     saveUninitialized: true
   }));
   app.engine('html', require('ejs').renderFile);
-  app.use(express.static(__dirname));
+  app.use(express.static(__dirname+'/public'));
 
-  var apiRouter = express.Router();
-  //var authRouter = express.Router();
-
-  app.use('/api/', apiRouter);
-  //app.use('/user/', authRouter);
-
-  require('./api/routes.js')(apiRouter);
-  //require('./api/auth.js')(authRouter);
-
-  app.get('/', function(req, res){
-    res.render('index.html');
-  });
-
+  require('./api/routes.js')(app);
 };

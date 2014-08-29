@@ -8,7 +8,7 @@ var Class = mongoose.model('class');
 
 module.exports = function(app){
 
-  app.post('/signup', function(req, res){
+  app.post('/api/signup', function(req, res){
     console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(user){
@@ -23,7 +23,7 @@ module.exports = function(app){
     });
   });
 
-  app.post('/login', function(req, res){
+  app.post('/api/login', function(req, res){
     console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(!user){
@@ -35,7 +35,7 @@ module.exports = function(app){
     });
   });
 
-  app.get('/home-data', function(req, res){
+  app.get('/api/home-data', function(req, res){
     Language.find({createdBy: req.session.username}, function(err, data){
       console.log(data);
       if(!data.length || data === undefined){
@@ -49,16 +49,15 @@ module.exports = function(app){
     });
   });
 
-  app.get('/get-language/:lang', function(req, res){
+  app.get('/api/get-language/:lang', function(req, res){
     var key = req.params.lang;
-    var data = filter(req.session.languages, function(language){
-      return language.name === key;
-    });
-    data = JSON.stringify(data);
-    res.json(data);
+    Language.findOne({name: key}, function(err, lang){
+      var data = JSON.stringify(lang);
+      res.end(data);
+    })
   });
 
-  app.post('/new-language', function(req, res){
+  app.post('/api/new-language', function(req, res){
     console.log(req.body);
     new Language({createdBy: req.session.username, name: req.body.name}).save(function(err, data){
       req.session.language = data.name; //this is probably not needed
@@ -66,7 +65,7 @@ module.exports = function(app){
     });
   });
 
-  app.get('/word-data', function(req, res){
+  app.get('/api/word-data', function(req, res){
     Word.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       console.log('word data: ', data)
@@ -75,7 +74,7 @@ module.exports = function(app){
     });
   });
 
-  app.post('/new-word', function(req, res){
+  app.post('/api/new-word', function(req, res){
     var word = req.body, classes;
     if(!Array.isArray(word.classes)){
       classes = [].push(word.classes);
@@ -92,7 +91,7 @@ module.exports = function(app){
     })
   });
 
-  app.get('/classes-data', function(req, res){
+  app.get('/api/classes-data', function(req, res){
     Class.find({lang: req.session.language}, function(err, data){
       console.log(err);
       data = JSON.stringify(data);
@@ -100,7 +99,7 @@ module.exports = function(app){
     });
   });
 
-  app.post('/new-class', function(req, res){
+  app.post('/api/new-class', function(req, res){
     new Class({
       lang: req.session.language, 
       name: req.body.className, 
@@ -112,7 +111,7 @@ module.exports = function(app){
     });
   });
 
-  app.get('/transform-data', function(req, res){
+  app.get('/api/transform-data', function(req, res){
     Transform.find({lang: req.session.language}, function(err, data){
       console.log(data);
       data = JSON.stringify(data);
@@ -120,7 +119,28 @@ module.exports = function(app){
     });
   });
 
-  app.get('/structure-data', function(req, res){
+  app.post('/api/new-transform', function(req, res){
+    var data = req.body;
+    var formArray = [];
+    forEach(data.form, function(form, i){
+      formArray.push({form: form, meaning: data.meaning[i]})
+    })
+    new Transform({forms: formArray, lang: req.session.language}).save(function(err, data){
+      res.redirect('/#/dictionary');
+    })
+  })
+
+  app.get('/api/get-word/:id', function(req, res){
+    var id = req.params.id;
+    Word.findOne({_id: id}, function(err, data){
+      if(err){ console.log(err); }
+      data = {word: data.word};
+      data = JSON.stringify(data);
+      res.end(data);
+    })
+  })
+
+  app.get('/api/structure-data', function(req, res){
     Structure.find({lang: req.session.language}, function(err, data){
       console.log(data);
       data = JSON.stringify(data);
@@ -136,3 +156,9 @@ var filter = function(array, query){
     }
   }
 };
+
+var forEach = function(array, fn){
+  for(var i = 0; i < array.length; i++){
+    fn(array[i], i);
+  }
+}

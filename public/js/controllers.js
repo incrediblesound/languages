@@ -11,8 +11,6 @@ function languageHomeController($scope, $http, $routeParams){
   $scope.data = {};
   // $scope.data.lang = $routeParams.lang;
   $http.get('/api/get-language/' + $routeParams.lang).success(function(data){
-    data = JSON.parse(data);
-    console.log(data.wordCount);
     $scope.data.language = data;
   });
 }
@@ -48,4 +46,17 @@ function transformsController($scope, $http){
   $http.get('/api/transforms-data').success(function(data){
     $scope.data.transforms = data;
   });
+}
+
+function newTransformController($scope, $http, $routeParams){
+  var word = $routeParams.word;
+  $scope.data = {};
+  $scope.data.word = word;
+  $scope.counter = [1];
+  $http.get('/api/get-word/'+word).success(function(data){
+    $scope.data.wordText = data.word;
+  })
+  $scope.increment = function(){
+    $scope.counter.push($scope.counter[$scope.counter.length-1]+1);
+  }
 }

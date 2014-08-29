@@ -29,11 +29,15 @@ angular.module('myApp', ['ngRoute'])
         templateUrl: '../views/structures.html',
         controller: structuresController
       }).
+      when('/new-transform/:word', {
+        templateUrl: '../views/new-transform.html',
+        controller: newTransformController
+      }).
       when('/transforms', {
         templateUrl: '../views/transforms.html',
         controller: transformsController
       }).
       otherwise({
-        redirectTo:'/signup'
+        redirectTo:'/login'
       });
   });
