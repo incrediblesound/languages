@@ -10,7 +10,7 @@ var Note = mongoose.model('note');
 
 module.exports = function(app){
 
-  app.post('/api/signup', function(req, res){
+  app.post('/signup', function(req, res){
     console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(user){
@@ -25,7 +25,7 @@ module.exports = function(app){
     });
   });
 
-  app.post('/api/login', function(req, res){
+  app.post('/login', function(req, res){
     console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(!user){

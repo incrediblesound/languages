@@ -12,47 +12,41 @@ var makeWordArray = function(array){
   return results;
 }
 
-function entryController($scope, $location){}
+angular.module('myApp.controllers', [])
+.controller('entryController', function($scope, $location){})
+.controller('homeController',function($scope, $http, language){
+  $scope.languages = language;
+})
 
-function homeController($scope, $http){
-  $scope.data = {};
-  $http.get('/api/home-data').success(function(data){
-    $scope.data.languages = data;
-  });
-}
-
-function languageHomeController($scope, $http, $routeParams){
+.controller('languageHomeController', function($scope, $http, $routeParams){
   $scope.data = {};
   // $scope.data.lang = $routeParams.lang;
-  $http.get('/api/get-language/' + $routeParams.lang).success(function(data){
-    $scope.data.language = data;
+  $http.get('/api/get-language/' + $routeParams.lang).then(function(data){
+    $scope.data.language = data.data;
   });
-}
+})
 
-
-function dictionaryController($scope, api){
-  $scope.data = {};
-  api.getData(['classes', 'words', 'transforms'], function(data){
-    console.log(data);
-    $scope.data.words = data.words;
-    $scope.data.classes = data.classes;
-    $scope.data.transforms = data.transforms;
+.controller('dictionaryController', function($scope, api){
+  api.get(['classes', 'words', 'transforms']).then(function(response){
+    $scope.data = $scope.data || {};
+    $scope.data.classes = response[0];
+    $scope.data.words = response[1];
+    $scope.data.transforms = response[2];
   });
   $scope.display = function(word){
-    api.getWord(word, function(data){
-      console.log(data);
+    api.getWord(word).then(function(data){
       $scope.data.view = data;
     })
   }
-}
+})
 
-function structuresController($scope, $http, api){
+.controller('structuresController', function($scope, $http, api){
   $scope.data = {};
   $scope.data.formData = [];
 
-  api.getData(['classes','structures'], function(data){
-    $scope.data.structures = data.structures;
-    $scope.data.classes = data.classes;
+  api.get(['classes','structures']).then(function(response){
+    $scope.data.classes = response[0];
+    $scope.data.structures = response[1];
   });
 
   $scope.goblins = function(data){
@@ -61,22 +55,22 @@ function structuresController($scope, $http, api){
     console.log($scope.data.formData)
   };
 
-}
+})
 
-function notesController($scope, $http, api){
+.controller('notesController', function($scope, $http, api){
   if(prefixTree === undefined){
     var prefixTree = new Radix();
   }
   $scope.data = {};
   $scope.data.input;
   $scope.data.output;
-  api.getData(['words','structures','notes'], function(data){
-    $scope.data.words = data.words;
-    $scope.data.structures = data.structures;
-    $scope.data.notes = data.notes;
-    var wordArray = makeWordArray(data.words);
+  api.get(['words','structures','notes']).then(function(response){
+    $scope.data.words = response[0];
+    $scope.data.structures = response[1];
+    $scope.data.notes = response[2];
+    var wordArray = makeWordArray(response[0]);
     prefixTree.documentInsert(wordArray, false);
-  })
+  });
   $scope.assess = function(){
     if($scope.data.input !== undefined){
       if($scope.data.input !== ''){
@@ -86,24 +80,25 @@ function notesController($scope, $http, api){
       }
     }
   }
-}
+})
 
-function transformsController($scope, $http, api){
+.controller('transformsController', function($scope, $http, api){
   $scope.data = {};
-  api.getData(['transforms'], function(data){
-    $scope.data.transforms = data.transforms;
+  api.get('transforms').then(function(response){
+    $scope.data.transforms = response;
   });
-}
+})
 
-function newTransformController($scope, api, $routeParams){
+.controller('newTransformController', function($scope, api, $routeParams){
   var word = $routeParams.word;
   $scope.data = {};
   $scope.data.word = word;
   $scope.counter = [1];
-  api.getWord(word, function(data){
+  api.getWord().then(function(data){
     $scope.data.wordText = data.word;
   })
   $scope.increment = function(){
-    $scope.counter.push($scope.counter[$scope.counter.length-1]+1);
+    var last = $scope.counter[$scope.counter.length-1];
+    $scope.counter.push(last+1);
   }
-}
+})

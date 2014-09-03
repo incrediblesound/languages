@@ -13,7 +13,9 @@
 <div class="col-md-6">
   <form method="post" action="/api/new-note">
     <h3>New Note</h3>
+    <label form="content">Note:</label>
     <textarea class="form-control" name="content" ng-model="data.input"></textarea>
+    <label form="meaning">Translation:</label>
     <textarea class="form-control" name="meaning"></textarea>
     <input type="submit" class="btn btn-default">
   </form>
