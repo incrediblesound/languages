@@ -1,32 +1,23 @@
 angular.module('myApp.services', []).factory('api', function ($http){
   var results = {};
   var apiMap = {
-    'words': function(cb){
-      $http.get('/api/word-data').success(function(data){
-        return cb(data)
-      })
+    'words': function(){
+      return $http.get('/api/word-data')
     },
-    'classes': function(cb){
-      $http.get('/api/classes-data').success(function(data){
-        return cb(data)
-      })
+    'classes': function(){
+      return $http.get('/api/classes-data');
     },
     'transforms': function(cb){
-      $http.get('/api/transform-data').success(function(data){
-        return cb(data)
-      })
+      return $http.get('/api/transform-data')
     },
     'structures': function(cb){
-      $http.get('/api/structure-data').success(function(data){
-        return cb(data)
-      })
+      return $http.get('/api/structure-data')
     },
     'notes': function(cb){
-      $http.get('/api/note-data').success(function(data){
-        return cb(data)
-      })
+      return $http.get('/api/note-data')
     }
   };
+
   var getWord = function(id, cb){
     $http.get('/api/get-word/'+id).success(function(data){
       return cb(data);
@@ -34,8 +25,8 @@ angular.module('myApp.services', []).factory('api', function ($http){
   }
   var getData = function(array, cb){
     var current = array.shift();
-    apiMap[current](function(data){
-      results[current] = data;
+    apiMap[current]().then(function(data){
+      results[current] = data.data;
       if(!array.length){
         return cb(results);
       } else {
