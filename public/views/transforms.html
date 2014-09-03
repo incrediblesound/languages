@@ -1,0 +1,25 @@
+<nav class="navbar navbar-default" role="navigation">
+  	<div class="container-fluid">
+  		<div class="collapse navbar-collapse">
+  			<ul class="nav navbar-nav">
+  				<li><a href="/#/home">Home</a></li>
+  				<li><a href="/#/classes">Classes</a></li>
+  				<li><a href="/#/dictionary">Dictionary</a></li>
+  				<li><a href="/#/structures">Structures</a></li>
+  				<li><a href="/#/transforms">Transforms</a></li>
+  			</ul>
+  		</div>
+  	</div>
+</nav>
+<div class="row">
+  <div clas="col-md-4">
+    <form method="post" action="api/new-transform">
+      <div ng-repeat="num in counter">
+        <input name="form" placeholder="form {{num}}">
+        <input name="meaning" placeholder="meaning {{num}}">
+      </div>
+      <input type="submit" class="btn btn-default" value="Save">
+    </form>
+    <button class="btn btn-success", ng-click="increment()">Add Transform</button>
+  </div>
+</div>

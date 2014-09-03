@@ -1,3 +1,4 @@
+require('../db.js');
 var mongoose = require('mongoose');
 var User = mongoose.model('user');
 var Language = mongoose.model('language');
@@ -5,6 +6,7 @@ var Word = mongoose.model('word');
 var Transform = mongoose.model('transform');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
+var Note = mongoose.model('note');
 
 module.exports = function(app){
 
@@ -37,22 +39,20 @@ module.exports = function(app){
 
   app.get('/api/home-data', function(req, res){
     Language.find({createdBy: req.session.username}, function(err, data){
-      console.log(data);
       if(!data.length || data === undefined){
         var obj = [{name:'No languages yet.'}];
         data = JSON.stringify({results: obj});
-        console.log(data);
       }
-      req.session.languages = data;
-      data = JSON.stringify({results: data});
+      data = JSON.stringify(data);
       res.end(data);
     });
   });
 
   app.get('/api/get-language/:lang', function(req, res){
     var key = req.params.lang;
-    Language.findOne({name: key}, function(err, lang){
-      var data = JSON.stringify(lang);
+    Language.findOne({name: key}, function(err, data){
+      req.session.language = data.name; 
+      data = JSON.stringify(data);
       res.end(data);
     })
   });
@@ -60,24 +60,18 @@ module.exports = function(app){
   app.post('/api/new-language', function(req, res){
     console.log(req.body);
     new Language({createdBy: req.session.username, name: req.body.name}).save(function(err, data){
-      req.session.language = data.name; //this is probably not needed
+      req.session.language = data.name;
       res.redirect('/#/language/'+data.name);
     });
   });
 
-  app.get('/api/word-data', function(req, res){
-    Word.find({lang: req.session.language}, function(err, data){
-      if(err){ console.log(err); }
-      console.log('word data: ', data)
-      data = JSON.stringify(data);
-      res.end(data);
-    });
-  });
 
   app.post('/api/new-word', function(req, res){
     var word = req.body, classes;
+    console.log(word);
     if(!Array.isArray(word.classes)){
-      classes = [].push(word.classes);
+      classes = []
+      classes.push(word.classes);
     } else {
       classes = word.classes;
     }
@@ -91,13 +85,6 @@ module.exports = function(app){
     })
   });
 
-  app.get('/api/classes-data', function(req, res){
-    Class.find({lang: req.session.language}, function(err, data){
-      console.log(err);
-      data = JSON.stringify(data);
-      res.end(data);
-    });
-  });
 
   app.post('/api/new-class', function(req, res){
     new Class({
@@ -111,22 +98,80 @@ module.exports = function(app){
     });
   });
 
+  app.get('/api/structure-data', function(req, res){
+    Structure.find({lang: req.session.language}, function(err, data){
+      data = JSON.stringify(data);
+      res.end(data);
+    });
+  });
+  
   app.get('/api/transform-data', function(req, res){
     Transform.find({lang: req.session.language}, function(err, data){
-      console.log(data);
+      data = JSON.stringify(data);
+      res.end(data);
+    });
+  });
+  
+  app.get('/api/word-data', function(req, res){
+    Word.find({lang: req.session.language}, function(err, data){
+      if(err){ console.log(err); }
+      console.log('word data: ', data)
       data = JSON.stringify(data);
       res.end(data);
     });
   });
 
+  app.get('/api/classes-data', function(req, res){
+    Class.find({lang: req.session.language}, function(err, data){
+      console.log('error: ', err);
+      data = JSON.stringify(data);
+      res.end(data);
+    });
+  });
+
+  app.get('/api/note-data', function(req, res){
+    Note.find({lang: req.session.language}, function(err, data){
+      if(err){ console.log(err); }
+      data = JSON.stringify(data);
+      console.log(data);
+      res.end(data);
+    })
+  })
+
   app.post('/api/new-transform', function(req, res){
     var data = req.body;
-    var formArray = [];
-    forEach(data.form, function(form, i){
-      formArray.push({form: form, meaning: data.meaning[i]})
-    })
-    new Transform({forms: formArray, lang: req.session.language}).save(function(err, data){
+    if(Array.isArray(data.form)){
+      var formArray = [];
+      forEach(data.form, function(form, i){
+        formArray.push({form: form, meaning: data.meaning[i]})
+      })
+    } else {
+      formArray = [{form: data.form, meaning: data.meaning}];
+    }
+    Word.update({_id: req.body.word}, { $pushAll: {transforms: formArray} }, function(err){
+      if(err){ console.log(err) }
       res.redirect('/#/dictionary');
+    })
+  })
+
+  app.post('/api/new-structure', function(req, res){
+    new Structure({
+      name: req.body.name,
+      parts: req.body.parts,
+      explanation: req.body.explanation
+    }).save(function(err){
+      if (err){ console.log(err); }
+      res.redirect('/#/structures');
+    })
+  })
+
+  app.post('/api/new-note', function(req, res){
+    new Note({
+      lang: req.session.language,
+      content: req.body.content,
+      meaning: req.body.meaning
+    }).save(function(err, data){
+      res.redirect('/#/notes');
     })
   })
 
@@ -134,19 +179,11 @@ module.exports = function(app){
     var id = req.params.id;
     Word.findOne({_id: id}, function(err, data){
       if(err){ console.log(err); }
-      data = {word: data.word};
       data = JSON.stringify(data);
       res.end(data);
     })
   })
 
-  app.get('/api/structure-data', function(req, res){
-    Structure.find({lang: req.session.language}, function(err, data){
-      console.log(data);
-      data = JSON.stringify(data);
-      res.end(data);
-    });
-  });
 };
 
 var filter = function(array, query){

@@ -1,4 +1,3 @@
-require('./db.js');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
@@ -9,7 +8,7 @@ module.exports = function(app, express){
     resave: true,
     saveUninitialized: true
   }));
-  app.engine('html', require('ejs').renderFile);
+  //app.engine('html', require('ejs').renderFile);
   app.use(express.static(__dirname+'/public'));
 
   require('./api/routes.js')(app);

@@ -1,0 +1,29 @@
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li><a href="/#/home">Home</a></li>
+          <li><a href="/#/dictionary">Dictionary</a></li>
+          <li><a href="/#/structures">Grammar</a></li>
+          <li><a href="/#/notes">Notes</a></li>
+        </ul>
+      </div>
+    </div>
+</nav>
+<div class="col-md-6">
+  <form method="post" action="/api/new-note">
+    <h3>New Note</h3>
+    <textarea class="form-control" name="content" ng-model="data.input"></textarea>
+    <textarea class="form-control" name="meaning"></textarea>
+    <input type="submit" class="btn btn-default">
+  </form>
+  <p>
+    <p ng-repeat="datum in assess() track by $index" >{{datum}}</p>
+  </p>
+</div>
+<div class="col-md-6">
+  <div ng-repeat="note in data.notes">
+    <p>{{note.content}}</p>
+    <p>{{note.meaning}}</p>
+  </div>
+</div>

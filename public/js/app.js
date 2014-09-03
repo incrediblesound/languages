@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute'])
+angular.module('myApp', ['ngRoute','myApp.services'])
   .config(function ($routeProvider){
     $routeProvider.
       when('/signup', {
@@ -17,10 +17,6 @@ angular.module('myApp', ['ngRoute'])
         templateUrl: '../views/language-home.html',
         controller: languageHomeController
       }).
-      when('/classes', {
-        templateUrl: '../views/classes.html',
-        controller: classController
-      }).
       when('/dictionary', {
         templateUrl: '../views/dictionary.html',
         controller: dictionaryController
@@ -33,9 +29,9 @@ angular.module('myApp', ['ngRoute'])
         templateUrl: '../views/new-transform.html',
         controller: newTransformController
       }).
-      when('/transforms', {
-        templateUrl: '../views/transforms.html',
-        controller: transformsController
+      when('/notes', {
+        templateUrl: '../views/note.html',
+        controller: notesController
       }).
       otherwise({
         redirectTo:'/login'

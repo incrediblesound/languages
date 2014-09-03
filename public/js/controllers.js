@@ -1,9 +1,23 @@
+var makeWordArray = function(array){
+  var results = [];
+  for(var i = 0; i < array.length; i++){
+    results.push(array[i].word);
+    var transforms = array[i].transforms;
+    if(transforms.length){
+      for(var k = 0; k < transforms.length; k++){
+        results.push(transforms[k].form);
+      }
+    }
+  }
+  return results;
+}
+
 function entryController($scope, $location){}
 
 function homeController($scope, $http){
   $scope.data = {};
   $http.get('/api/home-data').success(function(data){
-    $scope.data.languages = data.results;
+    $scope.data.languages = data;
   });
 }
 
@@ -15,45 +29,78 @@ function languageHomeController($scope, $http, $routeParams){
   });
 }
 
-function classController($scope, $http){
+
+function dictionaryController($scope, api){
   $scope.data = {};
-  $http.get('/api/classes-data').success(function(data){
+  api.getData(['classes', 'words', 'transforms'], function(data){
     console.log(data);
-    $scope.data.classes = data;
+    $scope.data.words = data.words;
+    $scope.data.classes = data.classes;
+    $scope.data.transforms = data.transforms;
   });
-}
-
-function dictionaryController($scope, $http){
-  $scope.data = {};
-  $http.get('/api/word-data').success(function(data){
-    $scope.data.words = data;
-    $http.get('/api/classes-data').success(function(data){
+  $scope.display = function(word){
+    api.getWord(word, function(data){
       console.log(data);
-      $scope.data.classes = data;
-    });
-  });
+      $scope.data.view = data;
+    })
+  }
 }
 
-function structuresController($scope, $http){
+function structuresController($scope, $http, api){
   $scope.data = {};
-  $http.get('/api/structures-data').success(function(data){
-    $scope.data.structures = data;
+  $scope.data.formData = [];
+
+  api.getData(['classes','structures'], function(data){
+    $scope.data.structures = data.structures;
+    $scope.data.classes = data.classes;
   });
+
+  $scope.goblins = function(data){
+    console.log(data);
+    $scope.data.formData.push(data);
+    console.log($scope.data.formData)
+  };
+
 }
 
-function transformsController($scope, $http){
+function notesController($scope, $http, api){
+  if(prefixTree === undefined){
+    var prefixTree = new Radix();
+  }
   $scope.data = {};
-  $http.get('/api/transforms-data').success(function(data){
-    $scope.data.transforms = data;
+  $scope.data.input;
+  $scope.data.output;
+  api.getData(['words','structures','notes'], function(data){
+    $scope.data.words = data.words;
+    $scope.data.structures = data.structures;
+    $scope.data.notes = data.notes;
+    var wordArray = makeWordArray(data.words);
+    prefixTree.documentInsert(wordArray, false);
+  })
+  $scope.assess = function(){
+    if($scope.data.input !== undefined){
+      if($scope.data.input !== ''){
+        var inputArray = $scope.data.input.split(' ');
+        var last = inputArray[inputArray.length-1];
+        return prefixTree.complete(last);
+      }
+    }
+  }
+}
+
+function transformsController($scope, $http, api){
+  $scope.data = {};
+  api.getData(['transforms'], function(data){
+    $scope.data.transforms = data.transforms;
   });
 }
 
-function newTransformController($scope, $http, $routeParams){
+function newTransformController($scope, api, $routeParams){
   var word = $routeParams.word;
   $scope.data = {};
   $scope.data.word = word;
   $scope.counter = [1];
-  $http.get('/api/get-word/'+word).success(function(data){
+  api.getWord(word, function(data){
     $scope.data.wordText = data.word;
   })
   $scope.increment = function(){

@@ -33,10 +33,16 @@ var TransformSchema = new Schema({
 
 var StructureSchema = new Schema({
   name: {type: String, unique: true},
-  struct: Array,
-  equivalent: String,
-  lang: String,
+  parts: Array,
+  explanation: String,
+  lang: String
 });
+
+var NoteSchema = new Schema({
+  lang: String,
+  content: String,
+  meaning: String
+})
 
 var User = mongoose.model('user', UserSchema);
 var Language = mongoose.model('language', LanguageSchema);
@@ -44,5 +50,6 @@ var Word = mongoose.model('word', WordSchema);
 var Transform = mongoose.model('transform', TransformSchema);
 var Structure = mongoose.model('structure', StructureSchema);
 var Class = mongoose.model('class', ClassSchema);
+var Note = mongoose.model('note', NoteSchema);
 
 mongoose.connect('mongodb://localhost/languages');
