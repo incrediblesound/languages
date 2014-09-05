@@ -6,6 +6,8 @@
 		<label for="password">Password</label>
 		<input class="form-control" type="password" name="password" ng-model='user.password'>
 		<input type="submit" value="Log In">
+		<pre>{{ loginForm | json }}</pre>
+		<pre>{{ user | json }}</pre>
 	</form>
 </div>
 <a href="#/signin">No account? Sign up... </a>

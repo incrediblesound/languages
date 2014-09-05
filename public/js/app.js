@@ -13,7 +13,7 @@ angular.module('myApp', ['ngRoute','myApp.controllers','myApp.services'])
         templateUrl: '../views/home.html',
         controller: 'homeController',
         resolve: {
-          language: function($http){
+          user_languages: function($http){
             return $http.get('/api/home-data').then(function(response){
               return response.data;
             })

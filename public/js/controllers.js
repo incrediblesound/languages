@@ -14,61 +14,60 @@ var makeWordArray = function(array){
 
 angular.module('myApp.controllers', [])
 .controller('entryController', function($scope, $location){})
-.controller('homeController',function($scope, $http, language){
-  $scope.languages = language;
+.controller('homeController',function($scope, $http, user_languages){
+  $scope.languages = user_languages;
 })
 
-.controller('languageHomeController', function($scope, $http, $routeParams){
+.controller('languageHomeController', function($scope, $http, $routeParams, language){
   $scope.data = {};
   // $scope.data.lang = $routeParams.lang;
-  $http.get('/api/get-language/' + $routeParams.lang).then(function(data){
+  language.getOne($routeParams.lang).then(function(data){
     $scope.data.language = data.data;
   });
 })
 
-.controller('dictionaryController', function($scope, api){
-  api.get(['classes', 'words', 'transforms']).then(function(response){
+.controller('dictionaryController', function($scope, dictionary, word){
+  dictionary.get(['classes', 'words']).then(function(response){
     $scope.data = $scope.data || {};
-    $scope.data.classes = response[0];
-    $scope.data.words = response[1];
-    $scope.data.transforms = response[2];
+    $scope.data.classes = response[0].data;
+    $scope.data.words = response[1].data;
   });
-  $scope.display = function(word){
-    api.getWord(word).then(function(data){
-      $scope.data.view = data;
+  $scope.display = function(id){
+    word.getOne(id).then(function(data){
+      $scope.data.view = data.data;
     })
   }
 })
 
-.controller('structuresController', function($scope, $http, api){
-  $scope.data = {};
-  $scope.data.formData = [];
+.controller('structuresController', function($scope, $http, dictionary){
+  $scope.formData = [];
 
-  api.get(['classes','structures']).then(function(response){
-    $scope.data.classes = response[0];
-    $scope.data.structures = response[1];
+  dictionary.get(['classes','structures']).then(function(response){
+    $scope.data = $scope.data || {};
+    $scope.data.classes = response[0].data;
+    $scope.data.structures = response[1].data;
   });
 
   $scope.goblins = function(data){
     console.log(data);
-    $scope.data.formData.push(data);
-    console.log($scope.data.formData)
+    $scope.formData.push(data);
+    console.log($scope.formData)
   };
 
 })
 
-.controller('notesController', function($scope, $http, api){
+.controller('notesController', function($scope, $http, dictionary){
   if(prefixTree === undefined){
     var prefixTree = new Radix();
   }
   $scope.data = {};
   $scope.data.input;
   $scope.data.output;
-  api.get(['words','structures','notes']).then(function(response){
-    $scope.data.words = response[0];
-    $scope.data.structures = response[1];
-    $scope.data.notes = response[2];
-    var wordArray = makeWordArray(response[0]);
+  dictionary.get(['words','structures','notes']).then(function(response){
+    $scope.data.words = response[0].data;
+    $scope.data.structures = response[1].data;
+    $scope.data.notes = response[2].data;
+    var wordArray = makeWordArray(response[0].data);
     prefixTree.documentInsert(wordArray, false);
   });
   $scope.assess = function(){
@@ -89,13 +88,13 @@ angular.module('myApp.controllers', [])
   });
 })
 
-.controller('newTransformController', function($scope, api, $routeParams){
-  var word = $routeParams.word;
+.controller('newTransformController', function($scope, word, $routeParams){
+  var id = $routeParams.word;
   $scope.data = {};
   $scope.data.word = word;
   $scope.counter = [1];
-  api.getWord().then(function(data){
-    $scope.data.wordText = data.word;
+  word.getOne(id).then(function(data){
+    $scope.data.wordText = data.data.word;
   })
   $scope.increment = function(){
     var last = $scope.counter[$scope.counter.length-1];
