@@ -1,46 +1,53 @@
-angular.module('myApp', ['ngRoute','myApp.controllers','myApp.services'])
-  .config(function ($routeProvider){
-    $routeProvider.
-      when('/signup', {
+angular.module('myApp', ['ui.router','myApp.controllers','myApp.services'])
+  .config(function ($stateProvider, $urlRouterProvider){
+    $urlRouterProvider.otherwise('/signup');
+
+    $stateProvider.
+      state('signup', {
+        url: '/signup',
         templateUrl: '../views/entry.html',
         controller: 'entryController'
       }).
-      when('/login', {
+      state('login', {
+        url: '/login',
         templateUrl: '../views/login.html',
-        controller: 'entryController'
+        controller: 'loginController'
       }).
-      when('/home', {
+      state('home', {
+        url: '/home',
         templateUrl: '../views/home.html',
         controller: 'homeController',
         resolve: {
-          user_languages: function($http){
+          home_data: function($http){
             return $http.get('/api/home-data').then(function(response){
               return response.data;
             })
           }
         }
       }).
-      when('/language/:lang', {
+      state('language_home', {
+        url: '/language/:lang', 
         templateUrl: '../views/language-home.html',
         controller: 'languageHomeController'
       }).
-      when('/dictionary', {
+      state('dictionary', {
+        url: '/dictionary',
         templateUrl: '../views/dictionary.html',
         controller: 'dictionaryController'
       }).
-      when('/structures', {
+      state('structures', {
+        url: '/structures',
         templateUrl: '../views/structures.html',
         controller: 'structuresController'
       }).
-      when('/new-transform/:word', {
+      state('transforms', {
+        url: '/new-transform/:word',
         templateUrl: '../views/new-transform.html',
         controller: 'newTransformController'
       }).
-      when('/notes', {
+      state('notes', {
+        url: '/notes',
         templateUrl: '../views/note.html',
         controller: 'notesController'
-      }).
-      otherwise({
-        redirectTo:'/login'
       });
   });

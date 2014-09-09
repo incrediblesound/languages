@@ -2,21 +2,15 @@
     <div class="container-fluid">
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li><a href="/#/home">Home</a></li>
-          <li><a href="/#/dictionary">Dictionary</a></li>
-          <li><a href="/#/structures">Grammar</a></li>
-          <li><a href="/#/notes">Notes</a></li>
+          <li><a ui-sref="home">Home</a></li>
+          <li><a ui-sref="dictionary">Dictionary</a></li>
+          <li><a ui-sref="structures">Grammar</a></li>
+          <li><a ui-sref="notes">Notes</a></li>
         </ul>
       </div>
     </div>
 </nav>
 <h2 class='text-center'>Welcome</h2>
-<div class="col-md-4">
-	<div ng-repeat="lang in languages">
-	<h3>{{lang.name}}</h3>
-	<a href={{"#/language/"+lang.name}}>Develop</a>
-	</div>
-</div>
 <div class="col-md-4">
 	<h2>New Language</h2>
 	<form method="post" action="/api/new-language">
@@ -24,4 +18,23 @@
 		<input name="name">
 		<input type="submit" value="Create">
 	</form>
+	<hr>
+	<div ng-repeat="lang in languages">
+	<h3>{{lang.name}}</h3>
+	<a ui-sref={{"#/language/"+lang.name}}>Develop</a>
+	</div>
+</div>
+<div class="col-md-4">
+	<h2>New Languages</h2>
+		<div ng-repeat="newlang in newLanguages">
+			<p class="lead">{{newlang.name}}</p>
+		</div>
+	<!-- <h2>Popular Languages</h2>
+		<div ng-repeat="poplang in popLanguages">
+		</div> -->
+</div>
+<div class="col-md-4">
+	<h2>Your Contributions</h2>
+		<div ng-repeat="bution in contributions">
+		</div>
 </div>

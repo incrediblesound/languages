@@ -1,11 +1,11 @@
 <h2>Sign Up</h2>
 <div class="col-md-4">
-	<form name="signupForm" action="/signup" method="post">
+	<form name="loginForm" ng-submit="login(credentials)" novalidate>
 		<label for="username">User Name</label>
-		<input class="form-control" type='text' name="username">
+		<input class="form-control" type='text' name="username" ng-model='credentials.username'>
 		<label for="password">Password</label>
-		<input class="form-control" type="password" name="password">
-		<input type="submit" value="Register">
+		<input class="form-control" type="password" name="password" ng-model='credentials.password'>
+		<input type="submit" value="Sign Up">
 	</form>
 </div>
 <a href="#/login">Already have an account? Sign in ...</a>

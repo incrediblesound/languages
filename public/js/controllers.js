@@ -13,33 +13,36 @@ var makeWordArray = function(array){
 }
 
 angular.module('myApp.controllers', [])
-.controller('entryController', function($scope, $location){})
-.controller('homeController',function($scope, $http, user_languages){
-  $scope.languages = user_languages;
+.controller('entryController', function($scope, $location, Auth){
+  $scope.credentials = {};
+  $scope.login = function(credentials){
+    Auth.login(credentials, '/signup');
+  }
+})
+.controller('loginController', function($scope, $location, Auth){
+  $scope.credentials = {};
+  $scope.login = function(credentials){
+    Auth.login(credentials, '/login');
+  }
+})
+.controller('homeController',function($scope, $state, $http, Session, home_data){
+  Session.auth();
+  $scope.languages = home_data.user;
+  $scope.newLanguages = home_data.newLangs;
+  $scope.contributions = home_data.contribs;
 })
 
-.controller('languageHomeController', function($scope, $http, $routeParams, language){
+.controller('languageHomeController', function($scope, $http, $stateParams, Session, language){
+  Session.auth();
   $scope.data = {};
-  // $scope.data.lang = $routeParams.lang;
-  language.getOne($routeParams.lang).then(function(data){
+  // $scope.data.lang = $stateParams.lang;
+  language.getOne($stateParams.lang).then(function(data){
     $scope.data.language = data.data;
   });
 })
 
-.controller('dictionaryController', function($scope, dictionary, word){
-  dictionary.get(['classes', 'words']).then(function(response){
-    $scope.data = $scope.data || {};
-    $scope.data.classes = response[0].data;
-    $scope.data.words = response[1].data;
-  });
-  $scope.display = function(id){
-    word.getOne(id).then(function(data){
-      $scope.data.view = data.data;
-    })
-  }
-})
-
-.controller('structuresController', function($scope, $http, dictionary){
+.controller('structuresController', function($scope, $http, Session, dictionary){
+  Session.auth();
   $scope.formData = [];
 
   dictionary.get(['classes','structures']).then(function(response){
@@ -56,42 +59,58 @@ angular.module('myApp.controllers', [])
 
 })
 
-.controller('notesController', function($scope, $http, dictionary){
+.controller('notesController', function($scope, $http, dictionary, word){
+  $scope.input;
+  $scope.data = {};
   if(prefixTree === undefined){
     var prefixTree = new Radix();
   }
-  $scope.data = {};
-  $scope.data.input;
-  $scope.data.output;
   dictionary.get(['words','structures','notes']).then(function(response){
-    $scope.data.words = response[0].data;
-    $scope.data.structures = response[1].data;
-    $scope.data.notes = response[2].data;
+    $scope.words = response[0].data;
+    $scope.structures = response[1].data;
+    $scope.notes = response[2].data;
     var wordArray = makeWordArray(response[0].data);
     prefixTree.documentInsert(wordArray, false);
   });
+
   $scope.assess = function(){
-    if($scope.data.input !== undefined){
-      if($scope.data.input !== ''){
-        var inputArray = $scope.data.input.split(' ');
+    if($scope.input !== undefined){
+      if($scope.input !== ''){
+        var inputArray = $scope.input.split(' ');
         var last = inputArray[inputArray.length-1];
-        return prefixTree.complete(last);
+        var complete = prefixTree.complete(last);
+        angular.forEach(complete, function(wordName){
+          if($scope.data[wordName] === undefined){
+            word.getOneByName(wordName).then(function(response){
+              response = response.data;
+              $scope.data[response.word] = response.definition;
+            })
+          }
+        })
       }
     }
   }
+  // $scope.meaning = function(name){
+  //   word.getOneByName(name).then(function(data){
+  //     console.log(data.data);
+  //     return 'ok';
+  //   })
+  // }
 })
 
-.controller('transformsController', function($scope, $http, api){
+.controller('transformsController', function($scope, $http, Session){
+  Session.auth();
   $scope.data = {};
   api.get('transforms').then(function(response){
     $scope.data.transforms = response;
   });
 })
 
-.controller('newTransformController', function($scope, word, $routeParams){
-  var id = $routeParams.word;
+.controller('newTransformController', function($scope, word, Session, $stateParams){
+  Session.auth();
+  var id = $stateParams.word;
   $scope.data = {};
-  $scope.data.word = word;
+  $scope.data.word = id;
   $scope.counter = [1];
   word.getOne(id).then(function(data){
     $scope.data.wordText = data.data.word;

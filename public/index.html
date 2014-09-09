@@ -3,9 +3,10 @@
 <head>
 	<title>Languages</title>
 	<script src="/bower_components/angular/angular.min.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/bower_components/angular-route/angular-route.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/bower_components/angular-ui-router/release/angular-ui-router.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/app.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/controllers.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/controllers/dictionaryController.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/auto-complete.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/base.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/class.js" type="text/javascript" charset="utf-8"></script>
@@ -14,11 +15,13 @@
 	<script src="/js/services/language.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/note.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/dictionary.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/services/session.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/services/authservice.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" type="text/css" href="../../bower_components/bootstrap/dist/css/bootstrap.css" />
 </head>
 <body>
 	<div class="container">
-		<div ng-view></div>
+		<div ui-view></div>
 	</div>
 </body>
 </html>

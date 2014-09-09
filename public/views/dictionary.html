@@ -1,14 +1,14 @@
 <nav class="navbar navbar-default" role="navigation">
-  	<div class="container-fluid">
-  		<div class="collapse navbar-collapse">
-  			<ul class="nav navbar-nav">
-  				<li><a href="/#/home">Home</a></li>
-  				<li><a href="/#/dictionary">Dictionary</a></li>
-  				<li><a href="/#/structures">Grammar</a></li>
-  				<li><a href="/#/notes">Notes</a></li>
-  			</ul>
-  		</div>
-  	</div>
+	<div class="container-fluid">
+	  	<div class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+		  		<li><a ui-sref="home">Home</a></li>
+		  		<li><a ui-sref="dictionary">Dictionary</a></li>
+		  		<li><a ui-sref="structures">Grammar</a></li>
+		  		<li><a ui-sref="transforms">Transforms</a></li>
+			</ul>
+	  	</div>
+	</div>
 </nav>
 <div class="col-md-4">
 	<h2>New Word</h2>
@@ -32,8 +32,9 @@
 	<div class="word-template" ng-repeat="word in data.words">
 		<p><strong>{{word.word}}</strong></p>
 		<p>{{word.definition}}</p>
-		<a href="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
+		<a ui-sref="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
 		<button class="btn btn-info btn-sm", ng-click="display(word._id)">View</button>
+		<div class="btn btn-default btn-sm", ng-click="d(word._id)">Delete</div>
 	</div>
 </div>
 <div class="col-md-4">

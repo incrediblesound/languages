@@ -23,13 +23,14 @@ var WordSchema = new Schema({
 
 var ClassSchema = new Schema({
   name: String,
-  explanation: String
-});
-
-var TransformSchema = new Schema({
-  forms: Array,
+  explanation: String,
   lang: String
 });
+
+// var TransformSchema = new Schema({
+//   forms: Array,
+//   lang: String
+// });
 
 var StructureSchema = new Schema({
   name: {type: String, unique: true},
@@ -41,13 +42,14 @@ var StructureSchema = new Schema({
 var NoteSchema = new Schema({
   lang: String,
   content: String,
-  meaning: String
+  meaning: String,
+  writtenBy: String
 })
 
 var User = mongoose.model('user', UserSchema);
 var Language = mongoose.model('language', LanguageSchema);
 var Word = mongoose.model('word', WordSchema);
-var Transform = mongoose.model('transform', TransformSchema);
+//var Transform = mongoose.model('transform', TransformSchema);
 var Structure = mongoose.model('structure', StructureSchema);
 var Class = mongoose.model('class', ClassSchema);
 var Note = mongoose.model('note', NoteSchema);

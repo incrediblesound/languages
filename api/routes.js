@@ -1,9 +1,8 @@
-require('../db.js');
 var mongoose = require('mongoose');
 var User = mongoose.model('user');
 var Language = mongoose.model('language');
 var Word = mongoose.model('word');
-var Transform = mongoose.model('transform');
+//var Transform = mongoose.model('transform');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
 var Note = mongoose.model('note');
@@ -18,8 +17,9 @@ module.exports = function(app){
       } else {
         new User({username: req.body.username, password: req.body.password}).save(function(err, newUser){
           console.log(newUser);
-          req.session.user = user;
-          res.redirect('/#/home');
+          req.session.user = newUser.username;
+          var data = JSON.stringify({user: newUser.username});
+          res.end(data);
         });
       }
     });
@@ -28,23 +28,30 @@ module.exports = function(app){
   app.post('/login', function(req, res){
     console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
-      if(!user){
-        res.redirect('/#/signup');
+      console.log(user);
+      if(user === null){
+        console.log('if null')
+        res.redirect('#/signup');
       } else {
-        req.session.user = user;
-        res.redirect('/#/home');
+        console.log('user exists')
+        req.session.user = user.username;
+        var data = JSON.stringify({user: user.username})
+        res.end(data);
       }
     });
   });
 
   app.get('/api/home-data', function(req, res){
-    Language.find({createdBy: req.session.username}, function(err, data){
-      if(!data.length || data === undefined){
-        var obj = [{name:'No languages yet.'}];
-        data = JSON.stringify({results: obj});
-      }
-      data = JSON.stringify(data);
-      res.end(data);
+    Language.find({createdBy: req.session.user}, function(err, user_languages){
+      if(err){ console.log(err) }
+      Language.find().sort('-created_at').limit(5).exec(function(err, new_languages){
+        if(err){ console.log(err) }
+        Note.find({writtenBy: req.session.user}).limit(5).exec(function(err, notes){
+          if(err){ console.log(err) }
+          var data = JSON.stringify({user: user_languages, newLangs: new_languages, contribs: notes});
+          res.end(data);
+        })
+      })
     });
   });
 
@@ -59,7 +66,7 @@ module.exports = function(app){
 
   app.post('/api/new-language', function(req, res){
     console.log(req.body);
-    new Language({createdBy: req.session.username, name: req.body.name}).save(function(err, data){
+    new Language({createdBy: req.session.user, name: req.body.name}).save(function(err, data){
       req.session.language = data.name;
       res.redirect('/#/language/'+data.name);
     });
@@ -78,7 +85,8 @@ module.exports = function(app){
     new Word({
       word: word.word,
       definition: word.definition,
-      classes: classes
+      classes: classes,
+      lang: req.session.language
     }).save(function(err, data){
       if(err){ console.log(err); }
       res.redirect('/#/dictionary')
@@ -94,7 +102,7 @@ module.exports = function(app){
     }).save(function(err, data){
       console.log(data);
       //data = JSON.stringify(data);
-      res.redirect('/#/classes');
+      res.redirect('/#/structures');
     });
   });
 
@@ -113,6 +121,7 @@ module.exports = function(app){
   });
   
   app.get('/api/word-data', function(req, res){
+    console.log(req.session);
     Word.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       console.log('word data: ', data)
@@ -148,7 +157,7 @@ module.exports = function(app){
     } else {
       formArray = [{form: data.form, meaning: data.meaning}];
     }
-    Word.update({_id: req.body.word}, { $pushAll: {transforms: formArray} }, function(err){
+    Word.update({_id: data.word}, { $pushAll: {transforms: formArray} }, function(err){
       if(err){ console.log(err) }
       res.redirect('/#/dictionary');
     })
@@ -158,7 +167,8 @@ module.exports = function(app){
     new Structure({
       name: req.body.name,
       parts: req.body.parts,
-      explanation: req.body.explanation
+      explanation: req.body.explanation,
+      lang: req.session.language
     }).save(function(err){
       if (err){ console.log(err); }
       res.redirect('/#/structures');
@@ -169,7 +179,8 @@ module.exports = function(app){
     new Note({
       lang: req.session.language,
       content: req.body.content,
-      meaning: req.body.meaning
+      meaning: req.body.meaning,
+      writtenBy: req.session.user
     }).save(function(err, data){
       res.redirect('/#/notes');
     })
@@ -183,6 +194,26 @@ module.exports = function(app){
       res.end(data);
     })
   })
+
+  app.get('/api/get-wordname/:name', function(req, res){
+    var name = req.params.name;
+    Word.findOne({word: name}, function(err, data){
+      if(err){ console.log(err); }
+      console.log(data);
+      data = JSON.stringify(data);
+      res.end(data);
+    })
+  })
+
+  app.get('/api/delete-word/:id', function(req, res){
+    var id = req.params.id;
+    Word.findOne({_id: id}).remove(function(err){
+      if(err){ console.log(err); }
+      res.end();
+    })
+  })
+
+  return app;
 
 };
 
