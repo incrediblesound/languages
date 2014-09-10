@@ -3,17 +3,13 @@ angular.module('myApp.services')
     var login = function(credentials, url){
       $http.post(url, credentials).then(function(data){
         var user = data.data;
-        console.log(user);
         if(!user){
           $state.go('login');
         } else {
-        Session.create(user);
           $state.go('home');  
         }
-
       })
     }
-    
     return {
       login: login
     }

@@ -41,6 +41,11 @@ module.exports = function(app){
     });
   });
 
+  app.get('/create_session', function(req, res){
+    var data = JSON.stringify({user: req.session.user})
+    res.end(data);
+  })
+
   app.get('/api/home-data', function(req, res){
     Language.find({createdBy: req.session.user}, function(err, user_languages){
       if(err){ console.log(err) }
@@ -139,7 +144,7 @@ module.exports = function(app){
   });
 
   app.get('/api/note-data', function(req, res){
-    Note.find({lang: req.session.language}, function(err, data){
+    Note.find({lang: req.session.language, writtenBy: req.session.user}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
       console.log(data);

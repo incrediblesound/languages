@@ -21,7 +21,7 @@
 	<hr>
 	<div ng-repeat="lang in languages">
 	<h3>{{lang.name}}</h3>
-	<a ui-sref={{"#/language/"+lang.name}}>Develop</a>
+	<a ui-sref="#/language/{{lang.name}}">Develop</a>
 	</div>
 </div>
 <div class="col-md-4">

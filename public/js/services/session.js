@@ -1,24 +1,29 @@
 angular.module('myApp.services')
-  .factory('Session', function($state){
-    var create = function(user){
-      this.user = user;
+  .factory('Session', function($state, $http){
+
+    var user = function(){
+      return $http.get('/create_session')
     }
-    var destroy = function(){
-      this.user = null;
-    }
-    var get = function(){
-      return this.user;
-    }
-    var auth = function(){
-      if(!this.user){
-        $state.go('login');
-      }
+
+    var user_owns = function(){
+      return $http.post('/user_languages/'+this.user);
     }
     
     return {
-      create: create,
-      destroy: destroy,
-      get: get,
-      auth: auth
+      get: function(){
+        return user().then(function(response){
+          return response.data.user;
+        })
+      },
+      auth: function(){
+        return user().then(function(response){
+          var user = response.data.user;
+          if(user){
+            return;
+          } else {
+            $state.go('login');
+          }
+        })
+      }
     }
   })
