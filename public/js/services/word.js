@@ -4,6 +4,7 @@ angular.module('myApp.services')
     var deleteOne = utils.getOne('/api/delete-word/');
     var getOneByName = utils.getOne('/api/get-wordname/');
     var getAllWords = utils.getAll('/api/word-data');
+
     return {
       getOne: getOneWord,
       deleteOne: deleteOne,

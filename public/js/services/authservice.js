@@ -10,7 +10,18 @@ angular.module('myApp.services')
         }
       })
     }
+
+    var logout = function(){
+      $http.get('/logout')
+    }
+
+    var auth = function(){
+      return $http.get('/api/authenticate/');
+    }
+
     return {
-      login: login
+      login: login,
+      logout: logout,
+      auth: auth
     }
   })

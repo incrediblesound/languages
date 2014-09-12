@@ -1,22 +1,14 @@
-<nav class="navbar navbar-default" role="navigation">
-	<div class="container-fluid">
-	  	<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-		  		<li><a ui-sref="home">Home</a></li>
-		  		<li><a ui-sref="dictionary">Dictionary</a></li>
-		  		<li><a ui-sref="structures">Grammar</a></li>
-		  		<li><a ui-sref="transforms">Transforms</a></li>
-		  		<li><a ui-sref="notes">Notes</a></li>
-			</ul>
-	  	</div>
+<div class="row">
+	<div class="col-md-4">
+		<h2>Words</h2>
+		<a ui-sref="dictionary">Add to Dictionary</a>
+		<h2>Grammar</h2>
+		<a ui-sref="transforms">Add to Grammar</a>
+		<h2>Structures</h2>
+		<a ui-sref="notes">Write New Notes</a>
 	</div>
-</nav>
-<h2>Words</h2>
-<p>Your language has {{ data.language.wordCount }} words.</p>
-<a ui-sref="dictionary">Add to Dictionary</a>
-<h2>Classes</h2>
-<a ui-sref="classes">Add to Classes</a>
-<h2>Transforms</h2>
-<a ui-sref="transforms">Add to Transforms</a>
-<h2>Structures</h2>
-<a ui-sref="structures">Add to Structures</a>
+	<div class="col-md-4">
+	</div>
+	<div class="col-md-4">
+	</div>
+</div>

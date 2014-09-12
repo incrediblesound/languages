@@ -1,5 +1,10 @@
 angular.module('myApp.controllers')
-.controller('dictionaryController', function($scope, $state, dictionary, word){
+.controller('dictionaryController', function($scope, $state, dictionary, word, note, Auth){
+
+  $scope.isAdmin; $scope.examples;
+
+  Auth.auth().then(function(response){ $scope.isAdmin = response.data; })
+
   dictionary.get(['classes', 'words']).then(function(response){
     $scope.data = $scope.data || {};
     $scope.data.classes = response[0].data;
@@ -14,9 +19,14 @@ angular.module('myApp.controllers')
   };
 
   $scope.display = function(id){
-    console.log('hello');
+    $scope.examples = [];
     word.getOne(id).then(function(data){
-      $scope.data.view = data.data;
+      var word = data.data;
+      console.log(word);
+      note.getNotesById(word.examples, function(examples){
+        $scope.data.view = word;
+        $scope.examples = examples;
+      })
     })
   };
 

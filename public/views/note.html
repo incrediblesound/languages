@@ -1,32 +1,32 @@
-<nav class="navbar navbar-default" role="navigation">
-    <div class="container-fluid">
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-          <li><a href="/#/home">Home</a></li>
-          <li><a href="/#/dictionary">Dictionary</a></li>
-          <li><a href="/#/structures">Grammar</a></li>
-          <li><a href="/#/notes">Notes</a></li>
-        </ul>
-      </div>
-    </div>
-</nav>
 <div class="col-md-6">
   <form method="post" action="/api/new-note">
     <h3>New Note</h3>
-    <label form="content">Note:</label>
+    <label for="content">Note:</label>
     <textarea class="form-control" name="content" ng-model="input"></textarea>
-    <label form="meaning">Translation:</label>
-    <textarea class="form-control" name="meaning"></textarea>
+    <label for="meaning">Translation:</label>
+    <textarea class="form-control" name="meaning" ng-model="meaning"></textarea>
+    <label for="example">Set as example for:</label>
+    <select name="example" class="form-control">
+      <option value="" default></option>
+      <option ng-repeat="word in inputArray" value="{{word}}">{{word}}</option>
+    </select>
+    <input type="hidden" name="id" value="{{id}}">
     <input type="submit" class="btn btn-default">
   </form>
   <p>
-    <div ng-repeat="datum in assess() track by $index" >
-      <p>{{datum}} - <span>{{ data[datum] }}</span></p>
+    <div ng-repeat="datum in complete track by $index" >
+      <p>{{datum}} - {{definitions[datum]}}</p>
   </div>
 </div>
 <div class="col-md-6">
-  <div class="note-box", ng-repeat="note in data.notes">
-    <p class="note-content">{{note.content}}</p>
+  <h3>Notes</h3>
+  <hr>
+  <div class="note-box", ng-repeat="note in notes">
+    <p class="note-content"><strong>{{note.content}}</strong></p>
     <p class="note-meaning">{{note.meaning}}</p>
+    <div ng-if="isAdmin">
+      <button class="btn btn-danger btn-sm"> X </button>
+      <button class="btn btn-info btn-sm", ng-click="passtoEdit(note.content, note.meaning, note._id)">Edit</button>
+    </div>
   </div>
 </div>

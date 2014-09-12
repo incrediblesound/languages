@@ -18,7 +18,8 @@ var WordSchema = new Schema({
   definition: String,
   classes: Array,
   transforms: Array,
-  lang: String
+  lang: String,
+  examples: [Schema.Types.ObjectId]
 });
 
 var ClassSchema = new Schema({

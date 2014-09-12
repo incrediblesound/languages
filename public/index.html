@@ -5,8 +5,11 @@
 	<script src="/bower_components/angular/angular.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/bower_components/angular-ui-router/release/angular-ui-router.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/app.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/directives/navbar.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/controllers.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/controllers/dictionaryController.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/controllers/notesController.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/controllers/navigationController.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/auto-complete.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/base.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/class.js" type="text/javascript" charset="utf-8"></script>
@@ -17,9 +20,14 @@
 	<script src="/js/services/dictionary.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/session.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/js/services/authservice.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/js/services/autocomplete.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" type="text/css" href="../../bower_components/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="/css/style.css" />
 </head>
 <body>
+	<div ng-controller="navigationController">
+		<my-nav></my-nav>
+	</div>
 	<div class="container">
 		<div ui-view></div>
 	</div>

@@ -1,16 +1,3 @@
-var makeWordArray = function(array){
-  var results = [];
-  for(var i = 0; i < array.length; i++){
-    results.push(array[i].word);
-    var transforms = array[i].transforms;
-    if(transforms.length){
-      for(var k = 0; k < transforms.length; k++){
-        results.push(transforms[k].form);
-      }
-    }
-  }
-  return results;
-}
 
 angular.module('myApp.controllers', [])
 .controller('entryController', function($scope, $location, Auth){
@@ -32,22 +19,27 @@ angular.module('myApp.controllers', [])
   $scope.contributions = home_data.contribs;
 })
 
-.controller('languageHomeController', function($scope, $http, $stateParams, Session, language){
+.controller('languageHomeController', function($scope, $http, $stateParams, Session, language, note){
   Session.auth();
-  $scope.data = {};
   // $scope.data.lang = $stateParams.lang;
-  language.getOne($stateParams.lang).then(function(data){
-    $scope.data.language = data.data;
+  language.getOne($stateParams.lang).then(function(response){
+    $scope.language = response.data;
   });
+  note.newNotes().then(function(response){
+    $scope.notes = response.data;
+  })
 })
 
-.controller('structuresController', function($scope, $http, Session, dictionary){
+.controller('structuresController', function($scope, $http, Session, Auth, dictionary){
   Session.auth();
-  $scope.formData = [];
+  $scope.formData = []; $scope.isAdmin;
+
+  Auth.auth().then(function(response){ $scope.isAdmin = response.data; })
 
   dictionary.get(['classes','structures']).then(function(response){
     $scope.data = $scope.data || {};
     $scope.data.classes = response[0].data;
+    $scope.data.classes.push({name:'Any'})
     $scope.data.structures = response[1].data;
   });
 
@@ -57,45 +49,6 @@ angular.module('myApp.controllers', [])
     console.log($scope.formData)
   };
 
-})
-
-.controller('notesController', function($scope, $http, dictionary, word){
-  $scope.input;
-  $scope.data = {};
-  if(prefixTree === undefined){
-    var prefixTree = new Radix();
-  }
-  dictionary.get(['words','structures','notes']).then(function(response){
-    $scope.words = response[0].data;
-    $scope.structures = response[1].data;
-    $scope.notes = response[2].data;
-    var wordArray = makeWordArray(response[0].data);
-    prefixTree.documentInsert(wordArray, false);
-  });
-
-  $scope.assess = function(){
-    if($scope.input !== undefined){
-      if($scope.input !== ''){
-        var inputArray = $scope.input.split(' ');
-        var last = inputArray[inputArray.length-1];
-        var complete = prefixTree.complete(last);
-        angular.forEach(complete, function(wordName){
-          if($scope.data[wordName] === undefined){
-            word.getOneByName(wordName).then(function(response){
-              response = response.data;
-              $scope.data[response.word] = response.definition;
-            })
-          }
-        })
-      }
-    }
-  }
-  // $scope.meaning = function(name){
-  //   word.getOneByName(name).then(function(data){
-  //     console.log(data.data);
-  //     return 'ok';
-  //   })
-  // }
 })
 
 .controller('transformsController', function($scope, $http, Session){

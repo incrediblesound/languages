@@ -1,18 +1,6 @@
-<nav class="navbar navbar-default" role="navigation">
-	<div class="container-fluid">
-	  	<div class="collapse navbar-collapse">
-			<ul class="nav navbar-nav">
-		  		<li><a ui-sref="home">Home</a></li>
-		  		<li><a ui-sref="dictionary">Dictionary</a></li>
-		  		<li><a ui-sref="structures">Grammar</a></li>
-		  		<li><a ui-sref="transforms">Transforms</a></li>
-			</ul>
-	  	</div>
-	</div>
-</nav>
 <div class="col-md-4">
-	<h2>New Word</h2>
-	<div class='dictionary-form'>
+	<div class='dictionary-form', ng-if="isAdmin">
+		<h2>New Word</h2>
 		<form method="post" action="/api/new-word">
 			<label for="word">Word:</label>
 			<input class="form-control" name="word">
@@ -28,20 +16,28 @@
 	</div>
 </div>
 <div class="col-md-4">
-	<h2>Your Dictionary</h2>
-	<div class="word-template" ng-repeat="word in data.words">
+	<h2>Dictionary</h2>
+	<input ng-model="select", placeholder="filter by...">
+	<hr>
+	<div class="word-template" ng-repeat="word in data.words | filter:select">
 		<p><strong>{{word.word}}</strong></p>
 		<p>{{word.definition}}</p>
-		<a ui-sref="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
+		<a href="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
 		<button class="btn btn-info btn-sm", ng-click="display(word._id)">View</button>
 		<div class="btn btn-default btn-sm", ng-click="d(word._id)">Delete</div>
 	</div>
 </div>
 <div class="col-md-4">
+	<div class="word-view">
 	<h2>{{data.view.word}}</h2>
 	<p class="lead">{{data.view.definition}}</p>
 		<div ng-repeat="form in data.view.transforms">
 			<p>{{form.form}} - {{form.meaning}}</p>
 		</div>
 		<hr>
+		<div ng-repeat="note in examples">
+			<p>{{note.content}}</p>
+			<p>{{note.meaning}}</p>
+		</div>
+	</div>
 </div>

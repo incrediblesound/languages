@@ -2,7 +2,6 @@ var mongoose = require('mongoose');
 var User = mongoose.model('user');
 var Language = mongoose.model('language');
 var Word = mongoose.model('word');
-//var Transform = mongoose.model('transform');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
 var Note = mongoose.model('note');
@@ -10,13 +9,11 @@ var Note = mongoose.model('note');
 module.exports = function(app){
 
   app.post('/signup', function(req, res){
-    console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(user){
         res.redirect('/#/login');
       } else {
         new User({username: req.body.username, password: req.body.password}).save(function(err, newUser){
-          console.log(newUser);
           req.session.user = newUser.username;
           var data = JSON.stringify({user: newUser.username});
           res.end(data);
@@ -25,15 +22,16 @@ module.exports = function(app){
     });
   });
 
+  app.get('/logout', function(req, res){
+    req.session.user = undefined;
+    res.end();
+  })
+
   app.post('/login', function(req, res){
-    console.log(req.body);
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
-      console.log(user);
       if(user === null){
-        console.log('if null')
         res.redirect('#/signup');
       } else {
-        console.log('user exists')
         req.session.user = user.username;
         var data = JSON.stringify({user: user.username})
         res.end(data);
@@ -44,6 +42,18 @@ module.exports = function(app){
   app.get('/create_session', function(req, res){
     var data = JSON.stringify({user: req.session.user})
     res.end(data);
+  })
+
+  app.get('/api/authenticate', function(req, res){
+    Language.findOne({name: req.session.language}).exec(function(err, data){
+      if(data){
+        var isAuthor = (data.createdBy === req.session.user);
+        isAuthor = JSON.stringify(isAuthor);
+        res.end(isAuthor);
+      } else {
+        res.end(JSON.stringify(false));
+      }
+    })
   })
 
   app.get('/api/home-data', function(req, res){
@@ -60,17 +70,25 @@ module.exports = function(app){
     });
   });
 
+  app.get('/api/new-notes', function(req, res){
+    Note.find({lang: req.session.language}).sort('-created_at').limit(10).exec(function(err, notes){
+      notes = JSON.stringify(notes);
+      res.end(notes);
+    })
+  })
+
   app.get('/api/get-language/:lang', function(req, res){
     var key = req.params.lang;
     Language.findOne({name: key}, function(err, data){
       req.session.language = data.name; 
       data = JSON.stringify(data);
+      console.log('getlang session', req.session);
+      console.log('end of session');
       res.end(data);
     })
   });
 
   app.post('/api/new-language', function(req, res){
-    console.log(req.body);
     new Language({createdBy: req.session.user, name: req.body.name}).save(function(err, data){
       req.session.language = data.name;
       res.redirect('/#/language/'+data.name);
@@ -126,10 +144,8 @@ module.exports = function(app){
   });
   
   app.get('/api/word-data', function(req, res){
-    console.log(req.session);
     Word.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
-      console.log('word data: ', data)
       data = JSON.stringify(data);
       res.end(data);
     });
@@ -144,7 +160,7 @@ module.exports = function(app){
   });
 
   app.get('/api/note-data', function(req, res){
-    Note.find({lang: req.session.language, writtenBy: req.session.user}, function(err, data){
+    Note.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
       console.log(data);
@@ -181,19 +197,45 @@ module.exports = function(app){
   })
 
   app.post('/api/new-note', function(req, res){
-    new Note({
+    var query;
+    if(req.body.id.length){
+      query = {_id: req.body.id};
+    } else {
+      query = {content: '- no content -'}
+    }
+    new Note.update(query,{
       lang: req.session.language,
       content: req.body.content,
       meaning: req.body.meaning,
       writtenBy: req.session.user
-    }).save(function(err, data){
-      res.redirect('/#/notes');
+    }, function(err, data){
+      var example = req.body.example;
+      if(example !== ""){
+        console.log("error: ", err);
+        Word.findOneAndUpdate({lang: req.session.language, word: example}, {$push: {examples: req.body.id}}, function(err, word){
+          if(err) { console.log(err) };
+          console.log(word);
+          res.redirect('/#/notes');
+        })
+      } else {
+        res.redirect('/#/notes');
+      }
     })
   })
 
   app.get('/api/get-word/:id', function(req, res){
     var id = req.params.id;
     Word.findOne({_id: id}, function(err, data){
+      if(err){ console.log(err); }
+      console.log(data);
+      data = JSON.stringify(data);
+      res.end(data);
+    })
+  })
+
+  app.get('/api/get-note/:id', function(req, res){
+    var id = req.params.id;
+    Note.findOne({_id: id}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
       res.end(data);
@@ -204,7 +246,6 @@ module.exports = function(app){
     var name = req.params.name;
     Word.findOne({word: name}, function(err, data){
       if(err){ console.log(err); }
-      console.log(data);
       data = JSON.stringify(data);
       res.end(data);
     })

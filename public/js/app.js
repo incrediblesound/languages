@@ -45,6 +45,9 @@ angular.module('myApp', ['ui.router','myApp.controllers','myApp.services'])
         templateUrl: '../views/new-transform.html',
         controller: 'newTransformController'
       }).
+      // state('classes', {
+      //   url: '/classes'
+      // })
       state('notes', {
         url: '/notes',
         templateUrl: '../views/note.html',
