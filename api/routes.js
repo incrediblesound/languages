@@ -197,22 +197,20 @@ module.exports = function(app){
   })
 
   app.post('/api/new-note', function(req, res){
-    var query;
-    if(req.body.id.length){
-      query = {_id: req.body.id};
-    } else {
-      query = {content: '- no content -'}
-    }
-    new Note.update(query,{
+    console.log(req.body);
+    var id = (req.body.id.length > 0) ? req.body.id : new mongoose.Types.ObjectId()
+    console.log(id);
+    console.log(req.session);
+    Note.findByIdAndUpdate(id, {
       lang: req.session.language,
       content: req.body.content,
-      meaning: req.body.meaning,
-      writtenBy: req.session.user
-    }, function(err, data){
+      meaning: req.body.meaning
+      // writtenBy: req.session.user
+    }, {upsert: true}, function(err, data){
       var example = req.body.example;
       if(example !== ""){
         console.log("error: ", err);
-        Word.findOneAndUpdate({lang: req.session.language, word: example}, {$push: {examples: req.body.id}}, function(err, word){
+        Word.findOneAndUpdate({lang: req.session.language, word: example}, {$push: {examples: id}}, function(err, word){
           if(err) { console.log(err) };
           console.log(word);
           res.redirect('/#/notes');

@@ -55,4 +55,4 @@ var Structure = mongoose.model('structure', StructureSchema);
 var Class = mongoose.model('class', ClassSchema);
 var Note = mongoose.model('note', NoteSchema);
 
-mongoose.connect('mongodb://localhost/languages');
+mongoose.connect('mongodb://JamesBase:44XD43DzE43tzolhx3y7Wimbtns0jw2UjZt8BPuylg8-@ds050077.mongolab.com:50077/JamesBase');
