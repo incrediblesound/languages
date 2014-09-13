@@ -18,5 +18,9 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "dependencies": {
+    "angular": "~1.2.24",
+    "angular-ui-router": "~0.2.11"
+  }
 }
