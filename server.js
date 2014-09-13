@@ -4,7 +4,7 @@ var express = require('express');
 var session = require('express-session');
 var app = express();
 
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({extended: true}));
   app.use(session({
     secret: 'alien badminton',
     resave: true,
