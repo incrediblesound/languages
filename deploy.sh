@@ -117,12 +117,14 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-# 4. Run Bower install
-if [ -e "$DEPLOYMENT_SOURCE/bower.json" ]; then  
-  eval $NPM_CMD install bower -g 
-  exitWithMessageOnError "installing bower failed"  
-  ./node_modules/.bin/bower install  
-  exitWithMessageOnError "bower failed"  
+# 4. Install bower packages
+if [ -e "$DEPLOYMENT_TARGET/bower.json" ]; then
+  cd "$DEPLOYMENT_TARGET"
+  eval $NPM_CMD install bower
+  exitWithMessageOnError "installing bower failed"
+  ./node_modules/.bin/bower install
+  exitWithMessageOnError "bower failed"
+  cd - > /dev/null
 fi  
 
 ##################################################################################################################################
