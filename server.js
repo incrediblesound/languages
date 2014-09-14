@@ -10,6 +10,7 @@ var Word = mongoose.model('word');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
 var Note = mongoose.model('note');
+var bcrypt = require('bcrypt-nodejs');
 var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -40,7 +41,8 @@ app.use(bodyParser.urlencoded({extended: true}));
       if(user){
         res.redirect('/#/login');
       } else {
-        new User({username: req.body.username, password: req.body.password}).save(function(err, newUser){
+        var hash = bcrypt.hashSync(req.body.password)
+        new User({username: req.body.username, password: hash}).save(function(err, newUser){
           req.session.user = newUser.username;
           var data = JSON.stringify({user: newUser.username});
           res.end(data);
@@ -55,10 +57,15 @@ app.use(bodyParser.urlencoded({extended: true}));
   })
 
   app.post('/login', function(req, res){
-    User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
+    User.findOne({username: req.body.username}, function(err, user){
+      var match = bcrypt.compareSync(req.body.password, user.password);
       if(user === null){
-        res.redirect('#/signup');
-      } else {
+        res.redirect('/#/signup');
+      } 
+      else if(!match){
+        res.redirect('/#/login');
+      }
+      else {
         req.session.user = user.username;
         var data = JSON.stringify({user: user.username})
         res.end(data);
