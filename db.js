@@ -28,10 +28,10 @@ var ClassSchema = new Schema({
   lang: String
 });
 
-// var TransformSchema = new Schema({
-//   forms: Array,
-//   lang: String
-// });
+var NewsSchema = new Schema({
+  forUser: String,
+  message: String
+});
 
 var StructureSchema = new Schema({
   name: {type: String, unique: true},
@@ -51,7 +51,7 @@ var NoteSchema = new Schema({
 var User = mongoose.model('user', UserSchema);
 var Language = mongoose.model('language', LanguageSchema);
 var Word = mongoose.model('word', WordSchema);
-//var Transform = mongoose.model('transform', TransformSchema);
+var News = mongoose.model('news', NewsSchema);
 var Structure = mongoose.model('structure', StructureSchema);
 var Class = mongoose.model('class', ClassSchema);
 var Note = mongoose.model('note', NoteSchema);

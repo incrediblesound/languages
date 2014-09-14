@@ -16,7 +16,12 @@ angular.module('myApp.controllers', [])
   Session.auth();
   $scope.languages = home_data.user;
   $scope.newLanguages = home_data.newLangs;
-  $scope.contributions = home_data.contribs;
+  $scope.news = home_data.news;
+  $scope.destroyNews = function(id){
+    $http.get('/api/delete-news/'+id).then(function(){
+      $state.go($state.$current, null, { reload: true });
+    })
+  }
 })
 
 .controller('languageHomeController', function($scope, $http, $stateParams, Session, language, note){

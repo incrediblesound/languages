@@ -21,7 +21,8 @@
 		</div> -->
 </div>
 <div class="col-md-4">
-	<h2>Your Contributions</h2>
-		<div ng-repeat="bution in contributions">
-		</div>
+	<h2>Your News</h2>
+		<ul>
+			<li ng-repeat="item in news">{{item.message}}<button class='btn btn-danger btn-sm' ng-click="destroyNews(item._id)"> X </button></li>
+		</ul>
 </div>

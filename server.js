@@ -1,8 +1,11 @@
 require('./db.js');
-var bodyParser = require('body-parser');
 var express = require('express');
-var session = require('express-session');
 var app = express();
+
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var bcrypt = require('bcrypt-nodejs');
+
 var mongoose = require('mongoose');
 var User = mongoose.model('user');
 var Language = mongoose.model('language');
@@ -10,7 +13,8 @@ var Word = mongoose.model('word');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
 var Note = mongoose.model('note');
-var bcrypt = require('bcrypt-nodejs');
+var News = mongoose.model('news');
+
 var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -46,7 +50,9 @@ app.use(bodyParser.urlencoded({extended: true}));
         console.log(hash);
         new User({username: req.body.username, password: hash}).save(function(err, newUser){
           console.log(err);
-          req.session.user = newUser.username;
+          var name = newUser.username
+          req.session.user = name;
+          new News({forUser: name, message: 'Welcome to Languages! Click "about" on the top of the page for help.'})
           res.redirect('/#/home');
         });
       }
@@ -100,8 +106,10 @@ app.use(bodyParser.urlencoded({extended: true}));
         if(err){ console.log(err) }
         Note.find({writtenBy: req.session.user}).limit(5).exec(function(err, notes){
           if(err){ console.log(err) }
-          var data = JSON.stringify({user: user_languages, newLangs: new_languages, contribs: notes});
-          res.end(data);
+          News.find({forUser: req.session.user}).exec(function(err, news){
+            var data = JSON.stringify({user: user_languages, newLangs: new_languages, news: news});
+            res.end(data);
+          })
         })
       })
     });
@@ -239,16 +247,25 @@ app.use(bodyParser.urlencoded({extended: true}));
       writtenBy: req.session.user,
       merged: (req.session.langAuthor === req.session.user)
     }, {upsert: true}, function(err, data){
+      if(err){ console.log(err); }
       var example = req.body.example;
       if(example !== ""){
-        console.log("error: ", err);
         Word.findOneAndUpdate({lang: req.session.language, word: example}, {$push: {examples: id}}, function(err, word){
           if(err) { console.log(err) };
-          console.log(word);
           res.redirect('/#/notes');
         })
       } else {
-        res.redirect('/#/notes');
+        if(req.session.langAuthor !== req.session.user){
+          new News({
+            forUser: req.session.langAuthor, 
+            message: 'User '+req.session.user+' submitted a new note for language '+req.session.language'.'
+          }).save(function(err, news){
+            if(err) { console.log(err); }
+            res.redirect('/#/notes');
+          })
+        } else {
+          res.redirect('/#/notes');
+        }
       }
     })
   })
@@ -258,6 +275,17 @@ app.use(bodyParser.urlencoded({extended: true}));
     Note.findById(id, function(err, item){
       item.remove(function(err, data){
         if(err){ console.log(err); }
+
+        if(item.writtenBy !== req.session.user){
+          new News({
+            forUser: item.writtenBy, 
+            message: 'Your note: "'+item.content+'" was deleted by the language admin.'
+          }).save(function(err, news){
+            if(err) { console.log(err); }
+            res.end();
+          })
+        }
+
         res.end();
       })
     })
@@ -266,8 +294,14 @@ app.use(bodyParser.urlencoded({extended: true}));
   app.get('/api/merge/:id', function(req, res){
     var id = req.params.id;
     Note.findByIdAndUpdate(id, {merged: true}, function(err, data){
-      console.log(err);
-      res.end();
+      if(err) console.log(err);
+      new News({
+        forUser: data.writtenBy,
+        message: 'Your note: "'+data.content+'" was merged in by the language admin.'
+      }).save(function(err, news){
+        if(err) console.log(err);  
+        res.end();
+      })
     })
   })
 
@@ -296,6 +330,14 @@ app.use(bodyParser.urlencoded({extended: true}));
       if(err){ console.log(err); }
       data = JSON.stringify(data);
       res.end(data);
+    })
+  })
+
+  app.get('/api/delete-news/:id', function(req, res){
+    var id = req.params.id;
+    News.findById(id).remove(function(err){
+      if(err) console.log(err);
+      res.end();
     })
   })
 
