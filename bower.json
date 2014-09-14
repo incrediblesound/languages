@@ -6,7 +6,7 @@
   ],
   "description": "A Hub for Language Innovators",
   "main": "server.js",
-  "directory": "public/bower_components",
+  "directory": "./public/bower_components/",
   "keywords": [
     "human",
     "language",
@@ -22,6 +22,8 @@
   ],
   "dependencies": {
     "angular": "~1.2.24",
-    "angular-ui-router": "~0.2.11"
+    "angular-ui-router": "~0.2.11",
+    "bootstrap": "~3.2.0",
+    "jquery": "~2.1.1"
   }
 }
