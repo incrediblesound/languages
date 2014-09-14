@@ -6,7 +6,6 @@
   ],
   "description": "A Hub for Language Innovators",
   "main": "server.js",
-  "directory": "./public/bower_components/",
   "keywords": [
     "human",
     "language",
