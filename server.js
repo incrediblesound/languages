@@ -10,6 +10,7 @@ var Word = mongoose.model('word');
 var Structure = mongoose.model('structure');
 var Class = mongoose.model('class');
 var Note = mongoose.model('note');
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded({extended: true}));
   app.use(session({
@@ -283,8 +284,5 @@ app.use(bodyParser.urlencoded({extended: true}));
     })
   })
 
-module.exports = app;
-
-//require('./config.js')(app, express);
-
-//module.exports = app;
+app.listen(port);
+//console.log('listening...');
