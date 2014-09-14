@@ -37,15 +37,17 @@ app.use(bodyParser.urlencoded({extended: true}));
 	}
 
   app.post('/signup', function(req, res){
+    console.log(req.body)
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(user){
         res.redirect('/#/login');
       } else {
-        var hash = bcrypt.hashSync(req.body.password)
+        var hash = bcrypt.hashSync(req.body.password);
+        console.log(hash);
         new User({username: req.body.username, password: hash}).save(function(err, newUser){
+          console.log(err);
           req.session.user = newUser.username;
-          var data = JSON.stringify({user: newUser.username});
-          res.end(data);
+          res.redirect('/#/home');
         });
       }
     });
@@ -68,7 +70,7 @@ app.use(bodyParser.urlencoded({extended: true}));
       else {
         req.session.user = user.username;
         var data = JSON.stringify({user: user.username})
-        res.end(data);
+        res.redirect('/#/home');
       }
     });
   });
@@ -132,7 +134,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 
   app.post('/api/new-word', function(req, res){
     var word = req.body, classes;
-    console.log(word);
     if(!Array.isArray(word.classes)){
       classes = []
       classes.push(word.classes);
@@ -157,7 +158,6 @@ app.use(bodyParser.urlencoded({extended: true}));
       name: req.body.className, 
       explanation: req.body.explanation
     }).save(function(err, data){
-      console.log(data);
       //data = JSON.stringify(data);
       res.redirect('/#/structures');
     });
@@ -197,7 +197,6 @@ app.use(bodyParser.urlencoded({extended: true}));
     Note.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
-      console.log(data);
       res.end(data);
     })
   })

@@ -8,7 +8,8 @@
     <label for="example">Set as example for:</label>
     <select name="example" class="form-control">
       <option value="" default></option>
-      <option ng-repeat="word in inputArray" value="{{word}}">{{word}}</option>
+      <option value="">only author can set examples</option>
+      <option ng-repeat="word in inputArray" ng-if="isAdmin" value="{{word}}">{{word}}</option>
     </select>
     <input type="hidden" name="id" value="{{id}}">
     <input type="submit" class="btn btn-default">

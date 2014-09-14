@@ -1,10 +1,4 @@
-var mongoose = require('mongoose');
-var User = mongoose.model('user');
-var Language = mongoose.model('language');
-var Word = mongoose.model('word');
-var Structure = mongoose.model('structure');
-var Class = mongoose.model('class');
-var Note = mongoose.model('note');
+
 
 module.exports = function(app){
 
@@ -15,8 +9,7 @@ module.exports = function(app){
       } else {
         new User({username: req.body.username, password: req.body.password}).save(function(err, newUser){
           req.session.user = newUser.username;
-          var data = JSON.stringify({user: newUser.username});
-          res.end(data);
+          res.redirect('/#/home');
         });
       }
     });
@@ -30,7 +23,7 @@ module.exports = function(app){
   app.post('/login', function(req, res){
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
       if(user === null){
-        res.redirect('#/signup');
+        res.redirect('/#/signup');
       } else {
         req.session.user = user.username;
         var data = JSON.stringify({user: user.username})
