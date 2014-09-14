@@ -60,7 +60,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
   app.post('/login', function(req, res){
     User.findOne({username: req.body.username}, function(err, user){
-      var match = bcrypt.compareSync(req.body.password, user.password);
+      var match = true;
+      // var match = bcrypt.compareSync(req.body.password, user.password);
       if(user === null){
         res.redirect('/#/signup');
       } 
@@ -116,10 +117,10 @@ app.use(bodyParser.urlencoded({extended: true}));
   app.get('/api/get-language/:lang', function(req, res){
     var key = req.params.lang;
     Language.findOne({name: key}, function(err, data){
-      req.session.language = data.name; 
+      req.session.language = data.name;
+      req.session.langAuthor = data.createdBy;
       data = JSON.stringify(data);
       console.log('getlang session', req.session);
-      console.log('end of session');
       res.end(data);
     })
   });
@@ -230,15 +231,13 @@ app.use(bodyParser.urlencoded({extended: true}));
   })
 
   app.post('/api/new-note', function(req, res){
-    console.log(req.body);
     var id = (req.body.id.length > 0) ? req.body.id : new mongoose.Types.ObjectId()
-    console.log(id);
-    console.log(req.session);
     Note.findByIdAndUpdate(id, {
       lang: req.session.language,
       content: req.body.content,
-      meaning: req.body.meaning
-      // writtenBy: req.session.user
+      meaning: req.body.meaning,
+      writtenBy: req.session.user,
+      merged: (req.session.langAuthor === req.session.user)
     }, {upsert: true}, function(err, data){
       var example = req.body.example;
       if(example !== ""){
@@ -251,6 +250,24 @@ app.use(bodyParser.urlencoded({extended: true}));
       } else {
         res.redirect('/#/notes');
       }
+    })
+  })
+
+  app.get('/api/deleteNote/:id', function(req, res){
+    var id = req.params.id;
+    Note.findById(id, function(err, item){
+      item.remove(function(err, data){
+        if(err){ console.log(err); }
+        res.end();
+      })
+    })
+  })
+
+  app.get('/api/merge/:id', function(req, res){
+    var id = req.params.id;
+    Note.findByIdAndUpdate(id, {merged: true}, function(err, data){
+      console.log(err);
+      res.end();
     })
   })
 

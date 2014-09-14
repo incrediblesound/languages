@@ -1,5 +1,5 @@
 angular.module('myApp.controllers')
-.controller('notesController', function($scope, $http, dictionary, Auth, word, Complete){
+.controller('notesController', function($scope, $state, $http, dictionary, Auth, word, Complete){
 
   $scope.input; $scope.isAdmin; $scope.inputArray; $scope.complete; $scope.definitions;
   $scope.meaning; $scope.id;
@@ -32,6 +32,18 @@ angular.module('myApp.controllers')
       $scope.definitions = Complete.definitions();
     } 
   })
+
+  $scope.merge = function(id){
+    $http.get('/api/merge/'+id).then(function(response){
+      $state.go($state.$current, null, { reload: true });
+    });
+  }
+
+  $scope.destroy = function(id){
+    $http.get('/api/deleteNote/'+id).then(function(response){
+      $state.go($state.$current, null, { reload: true });
+    })
+  }
 
   $scope.passtoEdit = function(content, meaning, id){
     $scope.input = content;

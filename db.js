@@ -44,7 +44,8 @@ var NoteSchema = new Schema({
   lang: String,
   content: String,
   meaning: String,
-  writtenBy: String
+  writtenBy: String,
+  merged: Boolean
 })
 
 var User = mongoose.model('user', UserSchema);
