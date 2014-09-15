@@ -19,14 +19,14 @@
 	<h2 class="text-center">Dictionary</h2>
 	<input class="form-control text-center" ng-model="select", placeholder="filter by...">
 	<hr>
-	<div class="word-box" ng-repeat="word in data.words | filter:select">
-		<div class="word-name">
-			<p><strong>{{word.word}}</strong></p>
+	<div class="panel panel-default" ng-repeat="word in data.words | filter:select">
+		<div class="panel-heading"><strong>{{word.word}}</strong></div>
+		<div class="panel-body">{{word.definition}}</div>
+		<div class="panel-footer">
+			<a href="/#/new-transform/{{word._id}}", class="btn btn-success btn-sm", ng-if="isAdmin"> + Transform</a>
+			<button class="btn btn-info btn-sm", ng-click="display(word._id)">View</button>
+			<div class="btn btn-default btn-sm", ng-click="d(word._id)", ng-if="isAdmin">Delete</div>
 		</div>
-		<p>{{word.definition}}</p>
-		<a href="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
-		<button class="btn btn-info btn-sm", ng-click="display(word._id)">View</button>
-		<div class="btn btn-default btn-sm", ng-click="d(word._id)">Delete</div>
 	</div>
 </div>
 <div class="col-md-4">
