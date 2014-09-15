@@ -8,7 +8,7 @@
     <label for="example">Set as example for:</label>
     <select name="example" class="form-control">
       <option value="" default></option>
-      <option value="">only author can set examples</option>
+      <option value="" ng-if="!isAdmin">only author can set examples</option>
       <option ng-repeat="word in inputArray" ng-if="isAdmin" value="{{word}}">{{word}}</option>
     </select>
     <input type="hidden" name="id" value="{{id}}">
@@ -23,10 +23,10 @@
   <h3>Notes</h3>
   <hr>
   <div ng-repeat="note in notes">
-    <div class="note-box", ng-if="note.merged || isAdmin">
-      <p class="note-content"><strong>{{note.content}}</strong></p>
-      <p class="note-meaning">{{note.meaning}}</p>
-      <div ng-if="isAdmin">
+    <div class="panel panel-default", ng-if="note.merged || isAdmin">
+      <div class="panel-heading"><strong>Note</strong></div>
+      <div class="panel-body">{{note.content}}<br><br><strong>Translation: </strong>{{note.meaning}}</div>
+      <div class="panel-footer" ng-if="isAdmin">
         <button class="btn btn-danger btn-sm", ng-click="destroy(note._id)"> X </button>
         <button class="btn btn-default btn-sm", ng-if="!note.merged", ng-click="merge(note._id)">Merge</button>
         <button class="btn btn-info btn-sm", ng-click="passtoEdit(note.content, note.meaning, note._id)">Edit</button>

@@ -19,12 +19,13 @@
 			<span ng-repeat="part in formData track by $index">{{part}}</span>
 		</p>
 	</div>
-	<h3>Structures</h3>
+	<h3 class="text-center">Structures</h3>
 	<hr>
 	<div ng-repeat="struct in data.structures">
 		<p><strong>{{struct.name}}</strong></p>
 		<p>{{struct.explanation}}</p>
 		<p><span ng-repeat="part in struct.parts">{{part}}<span ng-if="$index !== struct.parts.length-1"> + </span></span></p>
+		<hr>
 	</div>
 </div>
 <div class="col-md-6">
@@ -40,8 +41,10 @@
 	</div>
 	<h3>Classes</h3>
 	<hr>
-	<div class="classes-template", ng-repeat="class in data.classes">
-		<p class='lead'>{{class.name}}</p>
-		<span>{{class.explanation}}</span>
+	<div class="panel panel-default", ng-repeat="class in data.classes">
+		<div class="class-name">
+			<div class='panel-heading'>{{class.name}}</div>
+		</div>
+		<div class='panel-body'>{{class.explanation}}</div>
 	</div>
 </div>

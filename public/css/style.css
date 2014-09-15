@@ -34,3 +34,39 @@
 	padding-left: 6px;
 	padding-top: 6px;
 }
+
+.note-box {
+	position: relative;
+	border: 1px solid black;
+	padding: 6px;
+	border-radius: 5px;
+	margin: 5px;	
+}
+
+.note-box hr {
+	margin: 5px;
+}
+
+.note-box p {
+	margin-bottom: 5px;
+}
+
+.class-box {
+	position: relative;
+	border: 1px solid black;
+	padding: 2px;
+	border-radius: 5px;
+	margin: 5px;
+}
+
+.class-box p {
+	margin: 3px;
+}
+
+.class-name {
+	background-color: #ECECF3;
+	border-radius: 5px;
+	padding-left: 3px;
+	padding-top: 3px;
+	margin: 0px;
+}
