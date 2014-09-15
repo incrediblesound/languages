@@ -40,6 +40,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 	  }
 	}
 
+  var checkLanguage = function(req, res, next){
+    if(req.session.language === undefined){
+      res.redirect('/#/home');
+    } else {
+      next();
+    }
+  }
+
   app.post('/signup', function(req, res){
     console.log(req.body)
     User.findOne({username: req.body.username, password: req.body.password}, function(err, user){
@@ -66,8 +74,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 
   app.post('/login', function(req, res){
     User.findOne({username: req.body.username}, function(err, user){
-      var match = true;
-      // var match = bcrypt.compareSync(req.body.password, user.password);
+      // var match = true;
+      var match = bcrypt.compareSync(req.body.password, user.password);
       if(user === null){
         res.redirect('/#/signup');
       } 
@@ -128,7 +136,7 @@ app.use(bodyParser.urlencoded({extended: true}));
       req.session.language = data.name;
       req.session.langAuthor = data.createdBy;
       data = JSON.stringify(data);
-      console.log('getlang session', req.session);
+      // console.log('getlang session', req.session);
       res.end(data);
     })
   });
@@ -141,7 +149,7 @@ app.use(bodyParser.urlencoded({extended: true}));
   });
 
 
-  app.post('/api/new-word', function(req, res){
+  app.post('/api/new-word', checkLanguage, function(req, res){
     var word = req.body, classes;
     if(!Array.isArray(word.classes)){
       classes = []
@@ -161,7 +169,7 @@ app.use(bodyParser.urlencoded({extended: true}));
   });
 
 
-  app.post('/api/new-class', function(req, res){
+  app.post('/api/new-class', checkLanguage, function(req, res){
     new Class({
       lang: req.session.language, 
       name: req.body.className, 
@@ -172,7 +180,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     });
   });
 
-  app.get('/api/structure-data', function(req, res){
+  app.get('/api/structure-data', checkLanguage, function(req, res){
     Structure.find({lang: req.session.language}, function(err, data){
       data = JSON.stringify(data);
       res.end(data);
@@ -186,7 +194,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     });
   });
   
-  app.get('/api/word-data', function(req, res){
+  app.get('/api/word-data', checkLanguage, function(req, res){
     Word.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
@@ -194,7 +202,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     });
   });
 
-  app.get('/api/classes-data', function(req, res){
+  app.get('/api/classes-data', checkLanguage, function(req, res){
     Class.find({lang: req.session.language}, function(err, data){
       console.log('error: ', err);
       data = JSON.stringify(data);
@@ -202,7 +210,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     });
   });
 
-  app.get('/api/note-data', function(req, res){
+  app.get('/api/note-data', checkLanguage, function(req, res){
     Note.find({lang: req.session.language}, function(err, data){
       if(err){ console.log(err); }
       data = JSON.stringify(data);
@@ -226,7 +234,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     })
   })
 
-  app.post('/api/new-structure', function(req, res){
+  app.post('/api/new-structure', checkLanguage, function(req, res){
     new Structure({
       name: req.body.name,
       parts: req.body.parts,
@@ -238,7 +246,7 @@ app.use(bodyParser.urlencoded({extended: true}));
     })
   })
 
-  app.post('/api/new-note', function(req, res){
+  app.post('/api/new-note', checkLanguage, function(req, res){
     var id = (req.body.id.length > 0) ? req.body.id : new mongoose.Types.ObjectId()
     Note.findByIdAndUpdate(id, {
       lang: req.session.language,
@@ -258,7 +266,7 @@ app.use(bodyParser.urlencoded({extended: true}));
         if(req.session.langAuthor !== req.session.user){
           new News({
             forUser: req.session.langAuthor, 
-            message: 'User '+req.session.user+' submitted a new note for language '+req.session.language'.'
+            message: 'User '+req.session.user+' submitted a new note for language '+req.session.language+'.'
           }).save(function(err, news){
             if(err) { console.log(err); }
             res.redirect('/#/notes');

@@ -5,3 +5,16 @@
 .word-view {
 	position: fixed;
 }
+
+.news-box {
+	position: relative;
+	border: 1px solid black;
+	padding: 4px;
+	border-radius: 5px;
+	background-color: gray;
+	margin: 3px;
+}
+
+.news-box p {
+	color: white;
+}
