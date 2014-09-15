@@ -15,12 +15,14 @@
 		</form>
 	</div>
 </div>
-<div class="col-md-4">
-	<h2>Dictionary</h2>
-	<input ng-model="select", placeholder="filter by...">
+<div class="col-md-4 center-box">
+	<h2 class="text-center">Dictionary</h2>
+	<input class="form-control text-center" ng-model="select", placeholder="filter by...">
 	<hr>
-	<div class="word-template" ng-repeat="word in data.words | filter:select">
-		<p><strong>{{word.word}}</strong></p>
+	<div class="word-box" ng-repeat="word in data.words | filter:select">
+		<div class="word-name">
+			<p><strong>{{word.word}}</strong></p>
+		</div>
 		<p>{{word.definition}}</p>
 		<a href="/#/new-transform/{{word._id}}" class="btn btn-success btn-sm"> + Transform</a>
 		<button class="btn btn-info btn-sm", ng-click="display(word._id)">View</button>
