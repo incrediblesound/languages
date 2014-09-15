@@ -13,6 +13,11 @@ angular.module('myApp', ['ui.router','myApp.controllers','myApp.services'])
         templateUrl: '../views/login.html',
         controller: 'loginController'
       }).
+      state('about', {
+        url: '/about',
+        templateUrl: '../views/about.html',
+        controller: 'aboutController'
+      }).
       state('home', {
         url: '/home',
         templateUrl: '../views/home.html',
